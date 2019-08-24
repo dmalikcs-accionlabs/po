@@ -4,7 +4,7 @@ from django.urls import path, include, \
     re_path
 from django.contrib import admin
 from django.conf import settings
-
+from .views import IndexView
 
 class SettingsTemplateView(django.views.generic.TemplateView):
     def get_context_data(self, **kwargs):
@@ -18,13 +18,15 @@ urlpatterns = [
         template_name='robots.txt', content_type='text/plain'
     )),
     path('admin/', admin.site.urls),
+    path('', IndexView.as_view(), name="home"),
+
 ]
 
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [
-        path('media/(?P<path>.*)', django.views.static.serve, {
+        re_path('media/(?P<path>.*)', django.views.static.serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
         path('__debug__/', include(debug_toolbar.urls)),

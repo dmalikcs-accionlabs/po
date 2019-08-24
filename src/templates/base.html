@@ -1,11 +1,39 @@
-<!DOCTYPE html>
-<head>
-    <title>{% block title %} {% endblock %}</title>
-</head>
-<body>
-    <section>
-    {% block content %}
-    {% endblock %}
-    </section>
-</body>
-</html>
+{% extends 'skeleton.html' %}
+
+
+
+{% block top %}
+    {% include 'includes/menu/top.html' %}
+{% endblock %}
+
+{% block left_menu %}
+    {% include 'includes/menu/left.html' %}
+{% endblock %}
+
+
+{% block content %}
+
+     <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>{% block page_header %} {{ page_header|default_if_none:"Default Page header" }}{% endblock %}</h3>
+              </div>
+
+              <div class="title_right">
+                  {% block left_page_header %} {% endblock %}
+              </div>
+
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+                {% block main_content %} {% endblock %}
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+{% endblock %}
