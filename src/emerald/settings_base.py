@@ -153,7 +153,10 @@ INSTALLED_APPS = (
     'django_extensions',
 
     'emerald',
+    'parser_conf',
     'users',
+    'clients',
+
 )
 
 # A sample logging configuration. The only tangible logging
