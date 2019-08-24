@@ -9,7 +9,7 @@ class Client(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True, editable=False)
 
     def __str__(self):
         return self.name
@@ -22,7 +22,7 @@ class ClientAgent(models.Model):
     is_logged_allowed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True, editable=False)
 
     def __str__(self):
         return self.name if self.name else self.email

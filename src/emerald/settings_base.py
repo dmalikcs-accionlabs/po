@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'parser_conf',
     'users',
     'clients',
+    'ingestion',
 
 )
 

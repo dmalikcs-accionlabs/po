@@ -5,10 +5,11 @@ from .choices import SupportedFileFormatChoice, SUPPORTED_FILE_FORMAT_LIST, \
 
 class ParserConfigurationDef(models.Model):
     name = models.CharField(max_length=75)
-    f_format = models.CharField(max_length=35, choices=SUPPORTED_FILE_FORMAT_LIST)
+    f_format = models.CharField('supported file', max_length=35, choices=SUPPORTED_FILE_FORMAT_LIST,
+                                default=SupportedFileFormatChoice.XLS, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True, editable=False)
 
     class Meta:
         verbose_name = 'global parser configuration'
@@ -20,11 +21,11 @@ class ParserConfigurationDef(models.Model):
 
 class ColumnPayloadMap(models.Model):
     config = models.ForeignKey(ParserConfigurationDef, on_delete=models.PROTECT)
-    column_name = models.CharField(max_length=75)
-    payload = models.CharField(max_length=10, choices=COLUMN_CHOICE_LIST)
+    column_name = models.CharField('expected column', max_length=75)
+    payload = models.CharField('map column', max_length=10, choices=COLUMN_CHOICE_LIST)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True, editable=False)
 
     class Meta:
         unique_together = ('config', 'payload')
