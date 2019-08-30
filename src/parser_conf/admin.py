@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import ParserConfigurationDef, ColumnPayloadMap
+from .models import ParserConfigurationDef, \
+    ColumnPayloadMap, ParserCollection
 
 
 
@@ -35,3 +36,9 @@ class ParserConfigurationDefAdmin(admin.ModelAdmin):
     list_filter = ('created_at', 'updated_at', 'deleted_at')
     search_fields = ('name',)
     date_hierarchy = 'created_at'
+
+@admin.register(ParserCollection)
+class ParserCollection(admin.ModelAdmin):
+    pass
+
+

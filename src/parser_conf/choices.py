@@ -49,3 +49,34 @@ class ColumnChoice:
 
 
 COLUMN_CHOICE_LIST = ColumnChoice.get_choices()
+
+
+class ShareChoice:
+    PUBLIC = 'PUB'
+    PRIVATE = 'PVT'
+    WITHINTEAM = 'WITH_IN_TEAM'
+
+    @classonlymethod
+    def get_choices(cls):
+        return (
+            (cls.PUBLIC, 'Public'),
+            (cls.PRIVATE, 'Private'),
+            (cls.WITHINTEAM, 'With In Team'),
+        )
+
+SHARE_CHOICE_LIST = ShareChoice.get_choices()
+
+
+class DATEFormatChoice:
+    MMDDYY = '%M%d%Y'
+    DDMMYYYY ='%d%M%Y'
+
+    @classonlymethod
+    def get_choices(cls):
+        return (
+            (cls.MMDDYY, 'MMDDYY'),
+            (cls.DDMMYYYY, 'DDMMYYY')
+        )
+
+
+DATE_FORMAT_CHOICE_LIST = DATEFormatChoice.get_choices()

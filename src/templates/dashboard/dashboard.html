@@ -1,0 +1,13 @@
+{% extends 'base.html'  %}
+
+
+{% block main_content %}
+
+{% if user.is_staff %}
+    {% include 'includes/dashboard/staff_dashboard.html' %}
+
+{% else %}
+    {% include 'includes/dashboard/agent_dashboard.html' %}
+{% endif %}
+
+{% endblock %}

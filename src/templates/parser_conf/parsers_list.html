@@ -1,0 +1,57 @@
+{% extends 'base.html'  %}
+
+{% block main_content %}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Parsers</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="btn btn-xs btn-default" href="{% url 'parser:collection_list' %}">
+                        <i class="fa fa-plus"></i>
+                        Add</a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Expected Columns</th>
+                        <th>Mapped columns</th>
+                        <th>Created at</th>
+                        <th>Updated at</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ object.name }}</td>
+                        <td>
+                            {% for column in object.get_expected_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
+
+                        </td>
+                        <td>
+                            {% for column in object.get_mapped_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
+                        </td>
+                        <td>{{ object.created_at }}</td>
+                        <td>{{ object.updated_at }}</td>
+                        <td>
+                            <a href="{% url 'parser:parser_edit' object.pk %}">Edit</a>
+<!--                            <a href="#">Delete</a>-->
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

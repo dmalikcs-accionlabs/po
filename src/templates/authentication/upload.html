@@ -1,0 +1,60 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="{% static '/vendors/animate.css/animate.min.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block wrapper %}
+    <div>
+        <a class="hiddenanchor" id="signup"></a>
+
+        <a class="hiddenanchor" id="signin"></a>
+
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+
+
+                    {% include 'includes/forms/form-horizontal.html' with header='Inventory upload' %}
+
+                    <!--<form action="." method="post">
+                        <h1>Login Form</h1>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        {% comment %}
+                        <div>
+                            <input type="text" class="form-control" placeholder="Username" required="" />
+                        </div>
+                        <div>
+                            <input type="password" class="form-control" placeholder="Password" required="" />
+                        </div>
+
+
+                        {% endcomment %}
+                        <div>
+                            <button class="btn btn-default" type="submit">Login</button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="separator">
+                            <p class="change_link">New to site?
+                                <a href="#signup" class="to_register"> Create Account </a>
+                            </p>
+
+                            <div class="clearfix"></div>
+                            <br />
+                            <div>
+                                <h1><i class="fa fa-paw"></i> Topaz | A dynasty Product!</h1>
+                                <p>{% now "Y" %} Privacy and Terms</p>
+                            </div>
+                        </div>
+                    </form>-->
+                </section>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -148,15 +148,21 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.humanize',
+    'django.contrib.postgres',
 
     #3rd part Application
     'django_extensions',
+    'extra_views',
+    'rest_framework',
 
     'emerald',
     'parser_conf',
     'users',
     'clients',
     'ingestion',
+    'utils',
+    'rules',
 
 )
 
@@ -234,3 +240,8 @@ INTERNAL_IPS = (
 )
 
 AUTH_USER_MODEL = 'users.User'
+
+LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/users/login/'
+
+

@@ -1,0 +1,31 @@
+{% extends 'base.html'  %}
+
+{% block main_content %}
+<div class="row">
+    <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Ingestion</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+                {% include 'includes/forms/form-horizontal.html' %}
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2> <i class="fa fa-info"></i> Parsers </h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

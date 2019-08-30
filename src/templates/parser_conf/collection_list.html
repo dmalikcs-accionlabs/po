@@ -1,0 +1,75 @@
+
+{% extends 'base.html'  %}
+
+{% block main_content %}
+<div class="row">
+
+    {% for object in object_list %}
+
+    <div class="col-md-3 col-xs-12 widget widget_tally_box">
+        <div class="x_panel fixed_height_90">
+            <div class="x_content">
+
+                <h3 class="name">{{ object.name }}</h3>
+                <div class="flex">
+                    <p>
+                    {% for payload, display in object.columns.items %}
+                            <span class="badge badge-success"> {{ display }}</span> &nbsp;
+                    {% endfor %}
+                    </p>
+
+                </div>
+                <p>
+                    {{ object.brief }}
+                </p>
+
+                <div class="text-center">
+                    <a href="{% url 'parser:parser_add' object.pk %}" class="btn btn-success">Proceed</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!--<div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Select the parser</h2>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Created at</th>
+                        <th>Updated at</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ object.name }}</td>
+                        <td>{{ object.created_at }}</td>
+                        <td>{{ object.updated_at }}</td>
+                        <td>
+                            <a href="">select</a>
+                            &lt;!&ndash;                            <a href="#">Delete</a>&ndash;&gt;
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>-->
+</div>
+
+{% endblock %}

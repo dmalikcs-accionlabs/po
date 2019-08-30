@@ -1,0 +1,61 @@
+{% extends 'base.html'  %}
+
+{% block main_content %}
+
+<div class="col-md-8 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Parser Edit </h2>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <br>
+            <form action="." method="post" class="form-horizontal">
+                {% csrf_token %}
+
+                {% include 'includes/forms/fields.html' %}
+
+                {{ column_map_formset.management_form }}
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Expected Column</th>
+                        <th>Map Column</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for form in column_map_formset %}
+                    <tr>
+                        {% for hidden_field in form.hidden_fields %}
+                        {{ hidden_field }}
+                        {% endfor %}
+
+                        {% for field in form.visible_fields %}
+                        <td>{{ field }}
+                            {% if field.errors  %}
+                            {{ field.errors }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="form-group">
+                    <div class="col-sm-4 col-sm-offset-2">
+                        <a  href="{{ cancel_url }}" class="btn btn-white">{{ cancel|default:"Cancel" }}</a>
+                        <button class="btn btn-primary" type="submit">{{ save|default:"Save changes" }}</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

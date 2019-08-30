@@ -1,0 +1,28 @@
+{% load i18n %}
+{% spaceless %}
+<form action="{% if action %}{{ action }}{% else %}.{% endif %}"
+      method="{% if method %}{{ method }}{% else %}post{% endif %}"
+      {% if enctype %}enctype="multipart/form-data"{% endif %}
+      class="form-horizontal">
+
+    {% if header %}
+    <h1>{{header }}</h1>
+    {% endif %}
+
+    {% endspaceless %}
+    {% csrf_token %}
+
+    {% if delete_msg %}
+    <p>{{ delete_msg }} {{ del_obj }} ?</p>
+    {% endif %}
+
+    {% include 'includes/forms/fields.html' %}
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            <a  href="{{ cancel_url }}" class="btn btn-default">{{ cancel|default:"Cancel" }}</a>
+            <button class="btn btn-primary" type="submit" {% if submit_id %}id={{ submit_id }}{% endif %}>{{ save|default:"Save changes" }}</button>
+        </div>
+    </div>
+
+</form>

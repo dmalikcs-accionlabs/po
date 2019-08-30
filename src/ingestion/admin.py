@@ -39,15 +39,15 @@ class IngestionDataAdmin(admin.ModelAdmin):
         'agent',
         'subject',
         'body',
-        'is_proceed',
-        'created_t',
+        'can_process',
+        'created_at',
         'updated_at',
         'deleted_at',
     )
     list_filter = (
         'agent',
-        'is_proceed',
-        'created_t',
+        'can_process',
+        'created_at',
         'updated_at',
         'deleted_at',
     )

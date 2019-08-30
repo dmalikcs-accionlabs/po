@@ -1,0 +1,172 @@
+{% extends 'base.html'  %}
+
+{% block main_content %}
+<div class="row tile_count">
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i>  Agent</span>
+        <h4>{{object.name|capfirst }}</h4>
+        <!--        <span class="count_bottom"><i class="green">4% </i> From last Week</span>-->
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-clock-o"></i> Total Parser</span>
+        <div class="count">{{ object.get_parser_count }}</div>
+        <!--        <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> From last Week</span>-->
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Total ingestion </span>
+        <div class="count green">{{ object.get_ingestions_count }}</div>
+        <!--        <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Total ingestion Success</span>
+        <div class="count">{{ object.get_ingestions_completed_count }}</div>
+        <!--        <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>-->
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Total ingestion Failed</span>
+        <div class="count">{{ object.get_ingestions_failed_count }}</div>
+        <!--        <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Total Connections</span>
+        <div class="count">{{ object.get_ingestions_running_count }}</div>
+        <!--        <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>-->
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-4">
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-list"></i> Parsers</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="dashboard-widget-content">
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for parser in object.get_parsers %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ parser.name|capfirst }}</td>
+                            <td ><a href="{% url 'parser:parser_edit' parser.pk %}">view</a> </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2><i class="fa fa-list"></i> Agents</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="dashboard-widget-content">
+                        {% with agents=object.get_agents  %}
+                        {% if agents %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for agent in agents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ agent.name|capfirst }}</td>
+                                <td>{{ agent.email }}</td>
+                                <td ><a href="{% url 'clients:agent_detail' agent.pk %}">view</a> </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="text-center"><h4>No agent configure </h4></p>
+
+                        {% endif %}
+
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+    <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2> <i class="fa fa-list"></i> Recent ingestions</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="dashboard-widget-content">
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Client</th>
+                            <th>subject</th>
+                            <th>can process</th>
+                            <th>status</th>
+                            <th>Files</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ingestion in object.get_ingestions %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ ingestion.agent.email }}</td>
+                            <td>{{ ingestion.subject }}</td>
+                            <td>{% if  ingestion.can_process %}
+                                <i class="fa fa-check-circle-o text-success"></i>
+                                {% else %} <i class="fa  fa-times-circle-o text-danger"></i> {% endif %}</td>
+                            <td>{{ ingestion.get_status_display }}</td>
+                            <td>{{ ingestion.get_attached_files_count }}</td>
+                            <td>
+                                <a href="{% url 'ingestion:ingestion_detail' ingestion.id %}">View</a>
+                                <!--                            <a href="#">Edit</a> -->
+                                <!--                            <a href="#">Delete</a>-->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
