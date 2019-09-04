@@ -2,7 +2,8 @@ from django import template
 
 register = template.Library()
 
-from ingestion.models import IngestionData
+from ingestion.models import IngestionData,\
+    IngestionDataAttachment
 from ingestion.choices import StatusChoice
 
 @register.simple_tag(takes_context=True)
@@ -48,3 +49,10 @@ def get_recent_ingestions(context):
                filter(deleted_at__isnull=True)
     return q.order_by('-created_at')[:15] if user.is_staff \
         else q.filter(user=user).order_by('-created_at')[:15]
+
+
+@register.simple_tag(takes_context=True)
+def load_inventory(context, id):
+    i = IngestionDataAttachment.object.get(pk=id)
+
+    return i.get_inventory()

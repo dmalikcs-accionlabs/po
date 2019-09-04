@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     'ingestion',
     'utils',
     'rules',
+    'notification',
 
 )
 

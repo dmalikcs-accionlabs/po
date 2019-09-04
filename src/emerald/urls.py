@@ -4,7 +4,9 @@ from django.urls import path, include, \
     re_path
 from django.contrib import admin
 from django.conf import settings
-from .views import IndexView, IngestionReplicationView
+from .views import IndexView, IngestionReplicationView, \
+    EmailIngestionAPI
+
 class SettingsTemplateView(django.views.generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(SettingsTemplateView, self).get_context_data(**kwargs)
@@ -13,8 +15,10 @@ class SettingsTemplateView(django.views.generic.TemplateView):
 
 from ingestion.views import InventoryListAPIView
 
+
 api_patterns = [
     path('inventory/', InventoryListAPIView.as_view()),
+    path('ingestion/', EmailIngestionAPI.as_view()),
     ]
 
 

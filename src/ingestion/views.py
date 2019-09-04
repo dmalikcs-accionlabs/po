@@ -30,6 +30,7 @@ class IngestionDataView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(IngestionDataView, self).get_context_data()
         context['page_header'] = 'Ingestion'
+        context['txt_notifications'] = self.object.txt_notifications.all()
         return context
 
 class UploadInventory(FormView):

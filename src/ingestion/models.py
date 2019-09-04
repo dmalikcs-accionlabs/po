@@ -10,6 +10,7 @@ from django.contrib.postgres.fields import HStoreField, JSONField, \
     ArrayField
 import tablib
 import json
+from django.contrib.contenttypes.fields import GenericRelation
 
 
 class IngestionData(models.Model):
@@ -22,6 +23,7 @@ class IngestionData(models.Model):
     status = models.CharField(max_length=5, choices=STATUS_CHOICE_STATUS, default=StatusChoice.NEW)
     notes = models.TextField(blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, editable=False, on_delete=models.SET_NULL)
+    txt_notifications = GenericRelation('notification.TextNotification')
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
@@ -68,7 +70,6 @@ class IngestionData(models.Model):
     def get_task_count(self):
         return self.ingestion_tasks.count()
 
-
     def get_inventory_count(self):
         return self.ingestion_inventories.count()
 
@@ -76,6 +77,17 @@ class IngestionData(models.Model):
         files  = self.get_attached_files()
         if len(files) >= 1: f = files[0]
         return f.headers
+
+    def get_inventory(self):
+        headers = self.get_headers()
+        rows = []
+        print(headers)
+        for i in self.ingestion_inventories.all():
+            pass
+            rows.append([ i.inventory.get(header, None) for header in headers ])
+
+        return rows
+
 
 
 class IngestionDataTask(models.Model):
@@ -113,7 +125,6 @@ class IngestionDataAttachment(models.Model):
         if created:
             self.load_inventory()
 
-
     def load_inventory(self):
         if self.data_file and self.is_supported:
             dataset = tablib.Dataset()
@@ -122,6 +133,7 @@ class IngestionDataAttachment(models.Model):
             self.save()
             for inventory in json.loads(dataset.export('json')):
                 IngestionInventory.objects.create(ingestion=self.ingestion, inventory=inventory)
+
 
 class IngestionInventory(models.Model):
     ingestion = models.ForeignKey('ingestion.IngestionData', on_delete=models.CASCADE, related_name='ingestion_inventories')

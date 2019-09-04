@@ -29,6 +29,7 @@ class ColumnMapInineView(InlineFormSetFactory):
         form_class = ColumnMapForm
 
 
+
 def  get_column_map_form(collection_id):
     parser = ParserCollection.objects.get(id=collection_id)
     choices = [('','---------'),] + \
@@ -51,5 +52,8 @@ def get_columnmap_inline_view(collection_id):
         model = ColumnPayloadMap
         fields = ['column_name', 'payload', ]
         form_class = column_map_form
+        factory_kwargs = {
+            'extra': 10,
+        }
 
     return _ColumnMapInineView

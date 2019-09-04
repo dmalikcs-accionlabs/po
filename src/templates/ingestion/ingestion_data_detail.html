@@ -49,6 +49,18 @@
                     <th>{{ header }}</th>
                     {% endfor %}
                 </thead>
+                {% comment %}
+                <tbody>
+                {% for row in object.get_inventory %}
+                <tr>
+                    {% for column in row %}
+                    <td>{{ column }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+                </tbody>
+                {% endcomment %}
             </table>
         </div>
 
@@ -97,14 +109,45 @@
                                     <div class="byline">
                                         <span>{{ task.created_at|naturaltime }}</span>
                                     </div>
-                                    <p class="excerpt">Brief Message
+                                    {% if user.is_staff %}
+                                    <p class="excerpt">
+
                                     </p>
+                                    {% endif %}
                                 </div>
                             </div>
                         </li>
                         {% endfor %}
                     </ul>
 
+
+                </div>
+            </div>
+        </div>
+
+        <div class="x_panel">
+            <div class="x_title">
+                <h2> <i class="fa fa-envelope"></i>&nbsp;Notification</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="dashboard-widget-content">
+
+                    {% with object.txt_notifications.all as txt_notifications %}
+                    {% if txt_notifications %}
+
+                    <ul class="list-unstyled timeline">
+                        {% for txt_notification in txt_notifications %}
+                        <p>{{ txt_notification.msg|safe }} </p>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-center">
+                        <h5> No notification sent</h5>
+                    </p>
+                    {% endif %}
+
+                    {% endwith %}
 
                 </div>
             </div>
@@ -124,15 +167,15 @@
 <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
 <!--<script src="https://cdn.datatables.net/keytable/2.5.0/js/dataTables.keyTable.min.js"></script>-->
-<!--<script src="{%  static 'editor/js/dataTables.editor.js' %}"></script>-->
+<script src="{%  static 'editor/js/dataTables.editor.js' %}"></script>
 <script>
         var editor; // use a global for the submit and return data rendering in the examples
         $.noConflict();
     jQuery(document).ready(function() {
     jQuery('#example').DataTable( {
 <!--                processing: true,-->
-<!--                serverSide: true,-->
-<!--                ajax: "/api/inventory/",-->
+                serverSide: true,
+                ajax: "/api/inventory/",
             } );
 });
  </script>

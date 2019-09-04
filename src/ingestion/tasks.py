@@ -149,7 +149,8 @@ class PreparePayloadTask(Task):
         pk = retval['ingestion_request_id']
         i = IngestionData.objects.get(pk=pk)
         IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.PREPARE_PAYLOAD_TASK)
+                                         status=StatusChoice.COMPLETED_SUCCESS,
+                                         task=TaskChoice.PREPARE_PAYLOAD_TASK)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         pass
@@ -189,6 +190,7 @@ class HandleResponseTask(Task):
         i.save()
         IngestionDataTask.objects.create(ingestion=i,
                                          status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.HANDLE_RESPONSE_TASK)
+
 
 app.tasks.register(ValidateFileFormatTask())
 app.tasks.register(ValidateColumnNameTask())
