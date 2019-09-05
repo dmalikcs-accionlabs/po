@@ -7,6 +7,31 @@ import tablib
 import magic
 import time
 
+
+class SelectParserTask(Task):
+    name = 'select_parser'
+
+    def run(self, *args, **kwargs):
+        from .models import IngestionData
+        pk = args[0]
+        i = IngestionData.objects.get(pk=pk)
+        if not i.parser:
+            raise Exception("Parser not defined")
+        return {'ingestion_object': i}
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        from .models import IngestionData, \
+            IngestionDataTask
+        pk = args[0]
+        i = IngestionData.objects.get(pk=pk)
+        i.notes = 'No parser defined for user!'
+        i.einfo = einfo
+        i.status = StatusChoice.COMPLETED_FAILED
+        i.save()
+        IngestionDataTask.objects.\
+            create(ingestion=i, task=TaskChoice.ACK, status=StatusChoice.STOPED, notes='Unable to find parser')
+
+
 class ValidateFileFormatTask(Task):
     name = 'validate_file_format_task'
 
@@ -29,7 +54,7 @@ class ValidateFileFormatTask(Task):
         pk = retval['ingestion_request_id']
         i = IngestionData.objects.get(pk=pk)
         IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.VALIDATE_FILE_FORMAT)
+                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.VALIDATE_FILE_FORMAT, notes="File Format is correct")
 
     def on_failure(self,  exc, task_id, args, kwargs, einfo):
         from .models import IngestionData
@@ -83,19 +108,22 @@ class ValidateColumnNameTask(Task):
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         from .models import IngestionData
         ret = args[0]
-        i = IngestionData.objects.get(pk=ret['ingestion_request_id'])
+        i = IngestionData.objects.get(pk=ret)
         i.status = StatusChoice.COMPLETED_FAILED
         i.save()
 
 
 
-class ValidateColumnDataTask(Task):
-    name = 'validate_column_data_task'
+class InventoryIngestionTask(Task):
+    name = 'inventory_ingestion_task'
 
     def run(self, *args, **kwargs):
-        print("called Validated column data")
+        from .models import IngestionData, IngestionDataTask
         time.sleep(2)
         ret = args[0]
+        ingestion_obj = IngestionData.objects.get(pk=ret['ingestion_request_id'])
+        for inventory in ingestion_obj.ingestion_inventories.all():
+            inventory.process()
         return ret
 
     def on_success(self, retval, task_id, args, kwargs):
@@ -103,33 +131,52 @@ class ValidateColumnDataTask(Task):
         pk = retval['ingestion_request_id']
         i = IngestionData.objects.get(pk=pk)
         IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.VALIDATE_COLUMN_DATA)
+                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.INGESTION_TASK, notes="Sub tasks created for all inventory")
 
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        pass
+        from .models import IngestionData, IngestionDataTask
+        ret = args[0]
+        i = IngestionData.objects.get(pk=ret['ingestion_request_id'])
+        i.status = StatusChoice.COMPLETED_FAILED
+        i.save()
+        IngestionDataTask.objects.create(ingestion=i,
+                                         status=StatusChoice.COMPLETED_FAILED, task=TaskChoice.INGESTION_TASK, notes="Failed to create sub tasks")
+
+class ValidateColumnDataTask(Task):
+    name = 'validate_column_data_task'
+
+    def run(self, *args, **kwargs):
+        from .models import IngestionInventory
+        inventory = args[0]
+        inv_obj = IngestionInventory.objects.get(pk=inventory)
+        return {'inventory_pk': inv_obj.pk}
+
+    # def on_success(self, retval, task_id, args, kwargs):
+    #     from .models import IngestionData, IngestionDataTask
+    #     pk = retval['ingestion_request_id']
+    #     i = IngestionData.objects.get(pk=pk)
+    #     IngestionDataTask.objects.create(ingestion=i,
+    #                                      status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.VALIDATE_COLUMN_DATA)
+    #
+    #
+    # def on_failure(self, exc, task_id, args, kwargs, einfo):
+    #     pass
 
 
 class TransformationDataTask(Task):
     name = 'transformation_data_task'
 
     def run(self, *args, **kwargs):
-        # from .models import IngestionDataAttachment
-        print("called transformation data")
-        time.sleep(2)
+        from .models import IngestionInventory
         ret = args[0]
-        # attached_file = IngestionDataAttachment.objects.get(pk=ret['file_id'])
-        # data = tablib.Dataset()
-        # data.xls = attached_file.data_file.read()
-        # print(data)
-        return ret
+        inventory = ret['inventory_pk']
+        inv_obj = IngestionInventory.objects.get(pk=inventory)
+        inv_obj.transform_data()
+        return {'inventory_pk': inv_obj.pk}
 
     def on_success(self, retval, task_id, args, kwargs):
-        from .models import IngestionData, IngestionDataTask
-        pk = retval['ingestion_request_id']
-        i = IngestionData.objects.get(pk=pk)
-        IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.TRANSFORMATION_DATA)
+        pass
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         pass
@@ -139,59 +186,42 @@ class PreparePayloadTask(Task):
     name = 'prepare_payload_task'
 
     def run(self, *args, **kwargs):
-        print("called prepare payload data")
-        time.sleep(2)
+        from .models import IngestionInventory
         ret = args[0]
-        return ret
-
-    def on_success(self, retval, task_id, args, kwargs):
-        from .models import IngestionData, IngestionDataTask
-        pk = retval['ingestion_request_id']
-        i = IngestionData.objects.get(pk=pk)
-        IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS,
-                                         task=TaskChoice.PREPARE_PAYLOAD_TASK)
-
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        pass
+        inventory = ret['inventory_pk']
+        inv_obj = IngestionInventory.objects.get(pk=inventory)
+        return {'inventory_pk': inv_obj.pk}
 
 
 class SendInventoryTask(Task):
     name = 'send_inventory_task'
 
     def run(self, *args, **kwargs):
-        print("called send Inventory data")
-        time.sleep(2)
-        ret = args[0]
-        return ret
+            from .models import IngestionInventory
+            ret = args[0]
+            inventory = ret['inventory_pk']
+            inv_obj = IngestionInventory.objects.get(pk=inventory)
+            return {'inventory_pk': inv_obj.pk}
 
     def on_success(self, retval, task_id, args, kwargs):
-        from .models import IngestionData, IngestionDataTask
-        pk = retval['ingestion_request_id']
-        i = IngestionData.objects.get(pk=pk)
-        IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.SEND_PAYLOAD_TASK)
+        pass
 
 
 class HandleResponseTask(Task):
     name = 'handle_response_task'
 
     def run(self, *args, **kwargs):
-        print("Called handleResponse Task")
-        time.sleep(2)
+        from .models import IngestionInventory
         ret = args[0]
-        return ret
-
-    def on_success(self, retval, task_id, args, kwargs):
-        from .models import IngestionData, IngestionDataTask
-        pk = retval['ingestion_request_id']
-        i = IngestionData.objects.get(pk=pk)
-        i.status = StatusChoice.COMPLETED_SUCCESS
-        i.save()
-        IngestionDataTask.objects.create(ingestion=i,
-                                         status=StatusChoice.COMPLETED_SUCCESS, task=TaskChoice.HANDLE_RESPONSE_TASK)
+        inventory = ret['inventory_pk']
+        inv_obj = IngestionInventory.objects.get(pk=inventory)
+        inv_obj.handle_response()
+        return {'inventory_pk': inv_obj.pk}
 
 
+
+app.tasks.register(SelectParserTask())
+app.tasks.register(InventoryIngestionTask())
 app.tasks.register(ValidateFileFormatTask())
 app.tasks.register(ValidateColumnNameTask())
 app.tasks.register(ValidateColumnDataTask())

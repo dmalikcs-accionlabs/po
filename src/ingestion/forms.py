@@ -13,6 +13,7 @@ def get_ingestion_form(user):
     class _InventoryUploadForm(BaseOnlyFormClassAdd):
         parser = forms.ModelChoiceField(queryset=p, help_text="Please leave blank! if you are not sure", required=False)
         file = forms.FileField(help_text="Supported files: xls")
+        mobile = forms.IntegerField(min_value=1000000000, max_value=9999999999, help_text='Send status report after processing - In progress')
 
         def clean(self):
             cleaned_data = super(_InventoryUploadForm, self).clean()

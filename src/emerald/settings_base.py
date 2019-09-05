@@ -155,6 +155,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'extra_views',
     'rest_framework',
+    'rest_framework_datatables',
 
     'emerald',
     'parser_conf',
@@ -245,4 +246,20 @@ AUTH_USER_MODEL = 'users.User'
 LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/users/login/'
 
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 50,
+}
 

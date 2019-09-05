@@ -23,7 +23,11 @@ class ParserConfigurationDef(models.Model):
     collection = models.ForeignKey(ParserCollection, on_delete=models.PROTECT, null=True, blank=True)
     name = models.CharField(max_length=75)
     brief = models.TextField(null=True, blank=True)
-    date_format = models.CharField(max_length=35, choices=DATE_FORMAT_CHOICE_LIST, default=DATEFormatChoice.DDMMYYYY, editable=False)
+
+    date_format = models.CharField(max_length=35, choices=DATE_FORMAT_CHOICE_LIST,
+                                   default=DATEFormatChoice.DDMMYYYY, editable=False)
+
+
     f_format = models.CharField('supported file', max_length=35, choices=SUPPORTED_FILE_FORMAT_LIST,
                                 default=SupportedFileFormatChoice.XLS, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, on_delete=models.SET_NULL)
@@ -44,6 +48,9 @@ class ParserConfigurationDef(models.Model):
 
     def get_mapped_columns(self):
         return [conf.payload for conf in self.config_maps.all()]
+
+    def get_transform_payload(self):
+        return [(conf.column_name, conf.payload )for conf in self.config_maps.all()]
 
 class ColumnPayloadMap(models.Model):
     config = models.ForeignKey(ParserConfigurationDef, on_delete=models.CASCADE, related_name='config_maps')

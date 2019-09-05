@@ -18,6 +18,7 @@ class IngestionSerializer(serializers.Serializer):
         email = validated_data.get('email')
         subject = validated_data.get('subject')
         file = validated_data.get('file')
+
         object, created = ClientAgent.objects.get_or_create(email=email)
         if created:
             print("Send Information as new agent added")

@@ -6,4 +6,9 @@ class IngestionInventorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngestionInventory
-        fields = [ 'id',  'status',  ]
+        fields = [ 'id',  'status', '' ]
+
+    def to_representation(self, instance):
+        inventory = instance.inventory
+        inventory.update({'row_Id': instance.pk})
+        return inventory

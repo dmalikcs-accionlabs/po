@@ -1,4 +1,6 @@
-from django.views.generic import ListView, TemplateView, FormView, DetailView
+from django.views.generic import ListView, TemplateView, \
+    FormView, DetailView, RedirectView
+from django.views.generic.edit import SingleObjectMixin
 from .models import IngestionData, IngestionDataAttachment
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import get_ingestion_form
@@ -49,9 +51,10 @@ class UploadInventory(FormView):
     def form_valid(self, form):
         content_type = ContentType.objects.get_for_model(get_user_model())
         file = form.cleaned_data['file']
+        parser = form.cleaned_data['parser']
         user = self.request.user
         subject = 'web upload'
-        o = IngestionData.objects.create(content_type=content_type, object_id=user.pk, subject=subject)
+        o = IngestionData.objects.create(content_type=content_type, object_id=user.pk, subject=subject, parser=parser)
         IngestionDataAttachment.objects.create(ingestion=o, data_file=file, is_supported=True)
         self.object = o
         return super(UploadInventory, self).form_valid(form)
@@ -61,15 +64,29 @@ class UploadInventory(FormView):
 #
 
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from ingestion.models import IngestionInventory
 
 
 from ingestion.serializers import IngestionInventorySerializer
 
-class InventoryListAPIView(APIView):
+class InventoryListAPIView(generics.ListAPIView):
+    serializer_class = IngestionInventorySerializer
+    queryset = IngestionInventory.objects.all()
 
-    def get(self, request, format=None):
-        inventories  = IngestionInventory.objects.all()
-        serializer = IngestionInventorySerializer(inventories, many=True)
-        return Response(serializer.data)
+    # def list(self, request, format=None):
+    #     inventories  = IngestionInventory.objects.all()
+    #     serializer = IngestionInventorySerializer(inventories, many=True)
+    #     return Response(serializer.data)
+
+
+class InventoryProcessView(SingleObjectMixin, RedirectView):
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=IngestionInventory.objects.filter(deleted_at__isnull=True))
+        self.object.process()
+        return super(InventoryProcessView, self).get(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('ingestion:ingestion_detail', args=[self.object.ingestion.pk])

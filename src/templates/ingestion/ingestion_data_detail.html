@@ -2,69 +2,70 @@
 {% load humanize  static %}
 
 {% block extra_css %}
-<link href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet">
-<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
 
-<link href="{% static 'editor/css/editor.dataTables.css' %}" rel="stylesheet"/>
+    <link href="{% static 'editor/css/editor.dataTables.css' %}" rel="stylesheet"/>
 
 {% endblock %}
 
 {% block main_content %}
-<div class="row tile_count">
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-clock-o"></i> Attachments</span>
-        <h4>{{ object.get_attached_files_count }}</h4>
+    <div class="row tile_count">
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-clock-o"></i> Attachments</span>
+            <h4>{{ object.get_attached_files_count }}</h4>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Parser Name </span>
+            <h4>{{ object.parser|default:'Default' }}</h4>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Date</span>
+            <h4>{{ object.created_at|date:'d-m-Y f A' }}</h4>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Status</span>
+            <h4>{{ object.get_status_display }}</h4>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Tasks</span>
+            <h4>{{ object.get_task_count }}</h4>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Inventory</span>
+            <h4>{{ object.get_inventory_count }}</h4>
+        </div>
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Parser Name </span>
-        <h4>{{ object.parser|default:'Default' }}</h4>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Date</span>
-        <h4>{{ object.created_at|date:'d-m-Y f A' }}</h4>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Status</span>
-        <h4>{{ object.get_status_display }}</h4>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Tasks</span>
-        <h4>{{ object.get_task_count }}</h4>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Inventory</span>
-        <h4>{{ object.get_inventory_count }}</h4>
-    </div>
-</div>
 
 
-<div class="row">
-    <div class="col-md-8 col-sm-8 col-xs-12">
-        <div class="x_panel">
-            <table id="example" >
-                <thead>
-                <tr>
-                    {% for header in object.get_headers %}
-                    <th>{{ header }}</th>
-                    {% endfor %}
-                </thead>
-                {% comment %}
-                <tbody>
-                {% for row in object.get_inventory %}
+    <div class="row">
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <div class="x_panel">
+                <table id="example" >
+                    <thead>
+                    <tr>
+                    <th style="display: none">row_Id</th>
+                        {% for header in object.get_headers %}
+
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% comment %}{% for row in object.get_inventory %}
                 <tr>
                     {% for column in row %}
                     <td>{{ column }}</td>
                     {% endfor %}
                 </tr>
-                {% endfor %}
+                {% endfor %}{% endcomment %}
 
-                </tbody>
-                {% endcomment %}
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
 
-        {% comment %}
+            {% comment %}
         <div class="x_panel">
             <div class="x_title">
                 <h2> <i class="fa fa-file"></i>&nbsp;Files</h2>
@@ -81,79 +82,81 @@
         </div>
 
         {% endcomment %}
-    </div>
+        </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2> <i class="fa fa-history"></i>&nbsp;Tasks</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class="dashboard-widget-content">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2> <i class="fa fa-history"></i>&nbsp;Tasks</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="dashboard-widget-content">
 
-                    <ul class="list-unstyled timeline">
-                        {% for task in object.ingestion_tasks.all %}
+                        <ul class="list-unstyled timeline">
+                            {% for task in object.ingestion_tasks.all %}
 
-                        <li>
-                            <div class="block">
-                                <div class="tags">
-                                    <a href="" class="tag">
-                                        <span>{{ task.get_status_display }}</span>
-                                    </a>
-                                </div>
-                                <div class="block_content">
-                                    <h2 class="title">
-                                        <a>{{ task.get_task_display }}</a>
-                                    </h2>
-                                    <div class="byline">
-                                        <span>{{ task.created_at|naturaltime }}</span>
+                                <li>
+                                    <div class="block">
+                                        <div class="tags">
+                                            <a href="" class=" tag">
+                                                <span class="">{{ task.get_status_display }}</span>
+                                            </a>
+                                        </div>
+                                        <div class="block_content">
+                                            <h2 class="title">
+                                                <a>{{ task.get_task_display|capfirst }}</a>
+                                            </h2>
+
+                                            <p>{{ task.notes|default:'' }}</p>
+                                            <div class="byline">
+                                                <span>{{ task.created_at|naturaltime }}</span>
+                                            </div>
+                                            {% if user.is_staff %}
+                                                <p class="excerpt">
+
+                                                </p>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    {% if user.is_staff %}
-                                    <p class="excerpt">
-
-                                    </p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
 
 
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="x_panel">
-            <div class="x_title">
-                <h2> <i class="fa fa-envelope"></i>&nbsp;Notification</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class="dashboard-widget-content">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2> <i class="fa fa-envelope"></i>&nbsp;Notifications</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="dashboard-widget-content">
 
-                    {% with object.txt_notifications.all as txt_notifications %}
-                    {% if txt_notifications %}
+                        {% with object.txt_notifications.all as txt_notifications %}
+                            {% if txt_notifications %}
 
-                    <ul class="list-unstyled timeline">
-                        {% for txt_notification in txt_notifications %}
-                        <p>{{ txt_notification.msg|safe }} </p>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="text-center">
-                        <h5> No notification sent</h5>
-                    </p>
-                    {% endif %}
+                                <ul class="list-unstyled timeline">
+                                    {% for txt_notification in txt_notifications %}
+                                        <p>{{ txt_notification.msg|safe }} </p>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-center">
+                                <h5> No notification sent</h5>
+                                </p>
+                            {% endif %}
 
-                    {% endwith %}
+                        {% endwith %}
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}
@@ -162,21 +165,61 @@
 {% block extra_footer_js %}
 
 
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
-<!--<script src="https://cdn.datatables.net/keytable/2.5.0/js/dataTables.keyTable.min.js"></script>-->
-<script src="{%  static 'editor/js/dataTables.editor.js' %}"></script>
-<script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
+    <!--<script src="https://cdn.datatables.net/keytable/2.5.0/js/dataTables.keyTable.min.js"></script>-->
+    <script src="{%  static 'editor/js/dataTables.editor.js' %}"></script>
+    <script>
         var editor; // use a global for the submit and return data rendering in the examples
         $.noConflict();
-    jQuery(document).ready(function() {
-    jQuery('#example').DataTable( {
-<!--                processing: true,-->
+        jQuery(document).ready(function() {
+            jQuery('#example').DataTable( {
+                dom: "Bfrtip",
+                pageLength: 50,
+                ordering: false,
+                processing: true,
                 serverSide: true,
-                ajax: "/api/inventory/",
+                ajax: "/api/inventory/?format=datatables",
+                {% comment %}  ajax: {
+                      url: '/api/inventory/',
+                      dataSrc: ''
+                  },{% endcomment %}
+                rowId: "row_Id",
+                columns: [
+                    {data: 'row_Id', visible: false  },
+                    {% for header in object.get_headers %}
+                        { data: '{{ header }}' },
+
+                    {% endfor %}
+
+
+                    {#{ data: "name",  searchable: true },#}
+                    {#{ data: "mobile",  searchable: true },#}
+                    {#{ data: "father_name"},#}
+                    {#{ data: "standard"},#}
+                    {#{ data: "section"},#}
+                ],
+                {% comment %}
+                        select: {
+                            style:    'os',
+                            selector: 'td:first-child'
+                        },
+                        keys: {
+                            {#                    columns: ':not(:first-child)',#}
+                            keys: [ 9 ],
+                            editor: editor,
+                            editOnFocus: true
+                        },
+
+                        buttons: [
+                            { extend: "create", editor: editor },
+                            { extend: "edit",   editor: editor },
+                            { extend: "remove", editor: editor }
+                        ]{% endcomment %}
+                buttons: []
             } );
-});
- </script>
+        });
+    </script>
 {% endblock %}
