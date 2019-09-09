@@ -186,21 +186,34 @@ class PreparePayloadTask(Task):
     name = 'prepare_payload_task'
 
     def run(self, *args, **kwargs):
-        from .models import IngestionInventory
+        from .eibo_payload import PreparePayload
         ret = args[0]
         inventory = ret['inventory_pk']
-        inv_obj = IngestionInventory.objects.get(pk=inventory)
+        inv_obj = PreparePayload.objects.get(pk=inventory) # what is the use of this line
         return {'inventory_pk': inv_obj.pk}
-
 
 class SendInventoryTask(Task):
     name = 'send_inventory_task'
+
+    def __init__(self):
+        self.inventoryPostResponse = None
+
+    def postInventory(self, token, inventory_payload):
+        import requests
+        inventory_import_endpoint = 'https://api.dynastyse.com/api/inventory'
+        headers = {
+            "Authorization": f'Bearer {token}'
+        }
+        self.inventoryPostResponse = requests.post(inventory_import_endpoint, json=inventory_payload, headers=headers)
 
     def run(self, *args, **kwargs):
             from .models import IngestionInventory
             ret = args[0]
             inventory = ret['inventory_pk']
-            inv_obj = IngestionInventory.objects.get(pk=inventory)
+            inv_obj = IngestionInventory(performer='', venue='',
+                                         eventdate='', eventtime='',
+                                         vendor='',
+                                         fee=0).create_inventory_object(file_seatblocks='')
             return {'inventory_pk': inv_obj.pk}
 
     def on_success(self, retval, task_id, args, kwargs):
