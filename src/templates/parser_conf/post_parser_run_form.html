@@ -1,0 +1,36 @@
+{% extends 'base.html'  %}
+
+{% block main_content %}
+
+    <div class="col-md-8 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Parser Edit </h2>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br>
+                <form action="." method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    {% include 'includes/forms/inline_formset.html' with formset=formset %}
+
+                    <div class="form-group">
+                        <div class="col-sm-3 col-sm-offset-9">
+                            <a  href="{{ cancel_url }}" class="btn btn-white">{{ cancel|default:"Cancel" }}</a>
+                            <button class="btn btn-primary" type="submit">{{ save|default:"Save changes" }}</button>
+                        </div>
+                    </div>
+
+                </form>
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+    </div>
+
+{% endblock %}
