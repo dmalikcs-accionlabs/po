@@ -4,7 +4,10 @@ from .choices import SupportedFileFormatChoice, SUPPORTED_FILE_FORMAT_LIST, \
     DATE_FORMAT_CHOICE_LIST
 from django.conf import settings
 from django.contrib.postgres.fields import HStoreField
-
+from django.utils.timezone import now
+from django.contrib.contenttypes.models import ContentType
+from utils.models import MobileValidation
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 class ParserCollection(models.Model):
     name = models.CharField(max_length=75)
@@ -43,6 +46,10 @@ class ParserConfigurationDef(models.Model):
     def __str__(self):
         return self.name
 
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now()
+        self.save()
+
     def get_expected_columns(self):
         return [conf.column_name for conf in self.config_maps.all()]
 
@@ -65,4 +72,70 @@ class ColumnPayloadMap(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.column_name, self.payload)
+
+
+class PostIngestion(models.Model):
+    parser = models.ForeignKey(ParserConfigurationDef, on_delete=models.CASCADE, related_name='post_ingestions')
+    content_object = GenericForeignKey('content_type', 'object_id')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(editable=False, null=True)
+
+    def __str__(self):
+        return str(self.parser)
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now()
+        self.save()
+
+
+class EmailNotification(models.Model):
+    parser = models.ForeignKey(ParserConfigurationDef, on_delete=models.CASCADE, null=True)
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
+
+    def save(self, *args, **kwargs):
+        created = self._state.adding
+        super(EmailNotification, self).save(*args, **kwargs)
+        if created:
+            i = PostIngestion.objects.create(parser=self.parser, content_object=self)
+
+class TextNotification(models.Model):
+    parser = models.ForeignKey(ParserConfigurationDef, on_delete=models.CASCADE, null=True)
+    mobile = models.CharField(max_length=10, validators=[MobileValidation, ])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.text
+
+    def save(self, *args, **kwargs):
+        created = self._state.adding
+        super(TextNotification, self).save(*args, **kwargs)
+        if created:
+            i = PostIngestion.objects.create(parser=self.parser, content_object=self)
+
+
+class PostIngestionReport(models.Model):
+    REPORT = (
+        ('SUM', 'Summary'),
+    )
+    parser = models.ForeignKey(ParserConfigurationDef, on_delete=models.CASCADE, null=True)
+    report = models.CharField(max_length=10, choices=REPORT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.report
+    def save(self, *args, **kwargs):
+        created = self._state.adding
+        super(PostIngestionReport, self).save(*args, **kwargs)
+        if created:
+            i = PostIngestion.objects.create(parser=self.parser, content_object=self)
 

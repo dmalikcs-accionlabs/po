@@ -1,53 +1,59 @@
 {% extends 'base.html'  %}
 
 {% block main_content %}
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Agents</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="btn btn-xs btn-default" href="{% url 'clients:agent_add' %}">
-                        <i class="fa fa-plus"></i>
-                        Add</a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Client</th>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Created at</th>
-                        <th>Updated at</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for object in object_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ object.get_client }}</td>
-                        <td>{{ object.name|default:'' }}</td>
-                        <td>{{ object.email }}</td>
-                        <td>{{ object.created_at }}</td>
-                        <td>{{ object.updated_at }}</td>
-                        <td>
-                            <a href="{% url 'clients:agent_detail' object.id %}">View</a> |
-                            <a href="{% url 'clients:agent_edit' object.pk %}">Edit</a>
-                            <!--                            <a href="#">Delete</a>-->
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2><i class="fa fa-list"></i>&nbsp;Agents</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="btn btn-xs btn-default" href="{% url 'clients:agent_add' %}">
+                            <i class="fa fa-plus"></i>
+                            Add</a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Client</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Created at</th>
+                            <th>Updated at</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for object in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ object.get_client }}</td>
+                                <td>{{ object.name|default:'' }}</td>
+                                <td>{{ object.email }}</td>
+                                <td>{{ object.created_at }}</td>
+                                <td>{{ object.updated_at }}</td>
+                                <td>
+                                    <a href="{% url 'clients:agent_detail' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="View" data-original-title="View">
+                                        <i class="fa fa-eye"></i>
+                                    </a>   <a href="{% url 'clients:agent_edit' object.pk %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
+                                    <a href="{% url 'clients:agent_delete' object.pk %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete">
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

@@ -4,6 +4,7 @@ from parser_conf.models import ParserConfigurationDef
 from ingestion.models import IngestionData
 from ingestion.choices import StatusChoice as IngestionStatusChoice
 
+from django.utils.timezone import now
 
 class Client(models.Model):
     name = models.CharField(max_length=75)
@@ -66,6 +67,10 @@ class ClientAgent(models.Model):
     def save(self, *args, **kwargs):
         # send create user signals as soon as logged
         super(ClientAgent, self).save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now()
+        self.save()
 
     def get_client(self):
         return self.client.name if self.client else ''

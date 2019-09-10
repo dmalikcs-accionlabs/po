@@ -1,11 +1,18 @@
 {% extends 'base.html'  %}
+{% if object %}
+    {% block sub_page_header %}:: {{ object.name|capfirst }}{% endblock %}
+{% endif %}
+
 
 {% block main_content %}
 
     <div class="col-md-8 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Parser Edit </h2>
+                <h2>
+                    {{ icon }}
+                    {{ widget_heading|default:'Widget heading'}}
+                </h2>
 
                 <div class="clearfix"></div>
             </div>

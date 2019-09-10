@@ -61,6 +61,10 @@ class IngestionData(models.Model):
             select_parser = SelectParserTask()
             select_parser.apply_async(args= [self.pk, ])
 
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = now()
+        self.save()
+
     def execute_ingestion_process(self):
         validated_fileformat_task = ValidateFileFormatTask()
         validate_columnname_task = ValidateColumnNameTask()
@@ -92,7 +96,8 @@ class IngestionData(models.Model):
         if len(files) >= 1: f = files[0]
         return f.headers
 
-    def get_action_button(self, row):
+    @staticmethod
+    def get_action_button(row):
         if row.status == InventoryStatusChoice.NEW:
             return mark_safe("""
             <a href='{}'>
@@ -101,7 +106,7 @@ class IngestionData(models.Model):
         elif row.status == InventoryStatusChoice.QUEUE:
             return mark_safe("""
             <a href='{}'>
-            <i class='fa fa-clock-o'></i>
+            <i class='fa fa-stop'></i>
             </a>""".format(reverse('ingestion:inventory_process', args=[row.pk, ])))
         else:
             return mark_safe("""
@@ -114,10 +119,9 @@ class IngestionData(models.Model):
         rows = []
         for i in self.ingestion_inventories.all():
             r = [ i.inventory.get(header, None) for header in headers ]
-            r.append(self.get_action_button(i))
+            r.append(IngestionData.get_action_button(i))
             rows.append(r)
         return rows
-
 
 
 class IngestionDataTask(models.Model):
@@ -179,6 +183,9 @@ class IngestionInventory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
 
+    class Meta:
+        ordering  = ['-created_at', ]
+
     def __str__(self):
         return str(self.id)
 
@@ -222,3 +229,21 @@ class IngestionInventory(models.Model):
     def handle_response(self):
         self.status = InventoryStatusChoice.UPLOADED
         self.save()
+
+    def get_status(self):
+        if self.status == InventoryStatusChoice.NEW:
+            return mark_safe(""" New """)
+        elif self.status == InventoryStatusChoice.QUEUE:
+            return mark_safe(""" 
+            <i class='fa fa-clock-o' >
+            </i> """)
+        elif self.status == InventoryStatusChoice.UPLOADED:
+            return mark_safe("""
+            <a data-toggle="tooltip" data-placement="top" title="View" data-original-title="View">
+            <i class='fa fa-check-circle text-success'></i>
+            </a>
+            """)
+        elif self.status == InventoryStatusChoice.UPLOAD_FAILED:
+            return mark_safe(""" <i class='fa fa-times-circle-o text-danger'></i> """)
+        else:
+            return mark_safe("""<i class='fa fa-history'></i>""")

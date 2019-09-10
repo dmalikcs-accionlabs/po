@@ -3,7 +3,8 @@ from django.urls import path
 
 from clients.views import ClientListView, \
     AgentListView, ClientDetailView, AgentDetailView, \
-    ClientEditView, AgentEditForm, ClientAddView, AgentAddForm
+    ClientEditView, AgentEditForm, ClientAddView, AgentAddForm, \
+    AgentDeleteView, ClientDeletelView
 
 urlpatterns = [
 
@@ -13,6 +14,8 @@ urlpatterns = [
     ), name="client_detail"),
     path('client/<int:pk>/edit/', ClientEditView.as_view(
     ), name="client_edit"),
+    path('client/<int:pk>/delete/', ClientDeletelView.as_view(
+    ), name="client_delete"),
     path('client/add/', ClientAddView.as_view(
     ), name="client_add"),
 
@@ -22,6 +25,8 @@ urlpatterns = [
     ), name="agent_detail"),
     path('agents/<int:pk>/edit/', AgentEditForm.as_view(
     ), name="agent_edit"),
+    path('agents/<int:pk>/delete/', AgentDeleteView.as_view(
+    ), name="agent_delete"),
     path('agents/add/', AgentAddForm.as_view(
     ), name="agent_add"),
 

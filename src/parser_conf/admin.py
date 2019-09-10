@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from .models import ParserConfigurationDef, \
-    ColumnPayloadMap, ParserCollection
+    ColumnPayloadMap, ParserCollection, PostIngestion
 
 
 
@@ -38,6 +38,12 @@ class ParserConfigurationDefAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
 
 @admin.register(ParserCollection)
+class ParserCollection(admin.ModelAdmin):
+    pass
+
+
+
+@admin.register(PostIngestion)
 class ParserCollection(admin.ModelAdmin):
     pass
 

@@ -1,10 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% load i18n static %}
 
-</body>
-</html>
+
+{{ formset.management_form }}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Sr.</th>
+        {% for field in formset.form.visible_fields %}
+            {% if not field.widget.is_hidden %}
+                <th>{{ field.label|capfirst }}{% if field.required %}"required"{% endif %}
+                    {#                    {% if field.help_text %}{{ field.help_text|striptags }}{% endif %}#}
+                </th>
+            {% endif %}
+        {% endfor %}
+        {% if formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
+    </tr>
+    </thead>
+    <tbody>
+
+    {% if formset.non_form_errors %}
+        <div class="row col-md-12 text-center">
+            {% for error in formset.non_form_errors %}
+                {% if error %}
+                    <span class="text-danger ">{{ error }}</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% for form in formset %}
+
+        {% if form.non_field_errors %}
+            {{ form.non_field_errors }}
+            {% for error in form.non_field_errors %}
+                <span class="text-danger"> {{error}} </span>
+            {% endfor %}
+        {% endif %}
+
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+                <td>{{ field }}
+                    {% if field.errors  %}
+                        {% for error in field.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>

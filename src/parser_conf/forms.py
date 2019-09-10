@@ -2,7 +2,8 @@ from extra_views import CreateWithInlinesView, \
     UpdateWithInlinesView, InlineFormSetFactory, \
     NamedFormsetsMixin
 from .models import ParserConfigurationDef, ColumnPayloadMap, \
-    ParserCollection
+    ParserCollection, EmailNotification, TextNotification, \
+    PostIngestionReport
 from utils.forms import BaseFormClassAdd
 from django import forms
 
@@ -57,3 +58,27 @@ def get_columnmap_inline_view(collection_id):
         }
 
     return _ColumnMapInineView
+
+
+class EmailNotificationForm(BaseFormClassAdd):
+
+    class Meta:
+        model = EmailNotification
+        fields = '__all__'
+        exclude = ['parser', ]
+
+
+class PostIngestionReportForm(BaseFormClassAdd):
+
+    class Meta:
+        model = PostIngestionReport
+        fields = '__all__'
+        exclude = ['parser', ]
+
+
+class TextNotificationForm(BaseFormClassAdd):
+
+    class Meta:
+        model = TextNotification
+        fields = '__all__'
+        exclude = ['parser', ]
