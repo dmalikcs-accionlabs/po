@@ -188,9 +188,14 @@ class PreparePayloadTask(Task):
     def run(self, *args, **kwargs):
         from .eibo_payload import PreparePayload
         ret = args[0]
-        inventory = ret['inventory_pk']
-        inv_obj = PreparePayload.objects.get(pk=inventory) # what is the use of this line
-        return {'inventory_pk': inv_obj.pk}
+        # We have to provide the values to below parameters
+        inv_obj = PreparePayload(performer='', venue='',
+                                         eventdate='', eventtime='',
+                                         vendor='',
+                                         fee=0).create_inventory_object(file_seatblocks='',
+                                                                        file_barcodes='')
+        return {'inventory_payload': inv_obj.pk}
+
 
 class SendInventoryTask(Task):
     name = 'send_inventory_task'
@@ -198,22 +203,34 @@ class SendInventoryTask(Task):
     def __init__(self):
         self.inventoryPostResponse = None
 
-    def postInventory(self, token, inventory_payload):
+    def getToken(self):
+        import requests
+
+        url = 'https://monarchapi.azurewebsites.net/account/generatetoken'
+        cred = {
+            "email": "alever@dynastyse.com",
+            "password": "Crescent200$",
+            "rememberMe": True
+        }
+        headres = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        token = requests.post(url, json=cred, headres=headres)
+        return token
+
+    def postInventory(self, inventory_payload):
         import requests
         inventory_import_endpoint = 'https://api.dynastyse.com/api/inventory'
+        token = self.getToken()
         headers = {
             "Authorization": f'Bearer {token}'
         }
         self.inventoryPostResponse = requests.post(inventory_import_endpoint, json=inventory_payload, headers=headers)
 
     def run(self, *args, **kwargs):
-            from .models import IngestionInventory
-            ret = args[0]
-            inventory = ret['inventory_pk']
-            inv_obj = IngestionInventory(performer='', venue='',
-                                         eventdate='', eventtime='',
-                                         vendor='',
-                                         fee=0).create_inventory_object(file_seatblocks='')
+            inventory = args[0]
+            inv_obj = self.postInventory(inventory)
             return {'inventory_pk': inv_obj.pk}
 
     def on_success(self, retval, task_id, args, kwargs):
