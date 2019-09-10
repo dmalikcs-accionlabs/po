@@ -1,10 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html'  %}
 
-</body>
-</html>
+{% block main_content %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Parser - {{ object }}</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <p>Are you sure you want to delete "{{ object }} - {{ object.pk }}"?</p>
+                    {% include 'includes/forms/form-horizontal.html' with save='Confirm' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

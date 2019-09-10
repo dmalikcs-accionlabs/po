@@ -2,56 +2,63 @@
 
 {% block main_content %}
 
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Client</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="btn btn-xs btn-default" href="{% url 'clients:client_add' %}">
-                        <i class="fa fa-plus"></i>
-                        Add</a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Client ID</th>
-                        <th>Parsers</th>
-                        <th>Agents</th>
-                        <th>Created at</th>
-                        <th>Updated at</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for object in object_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ object.name }}</td>
-                        <td>{{object.external_clientid }}</td>
-                        <td>{{object.get_parser_count }}</td>
-                        <td>{{object.get_agents_count }}</td>
-                        <td>{{ object.created_at }}</td>
-                        <td>{{ object.updated_at }}</td>
-                        <td>
-                            <a href="{% url 'clients:client_detail' object.id %}">View</a> |
-                            <a href="{% url 'clients:client_edit' object.id %}">Edit</a>
-                            <!--                            <a href="#">Delete</a>-->
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2><i class="fa fa-list"></i>&nbsp;Client</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="btn btn-xs btn-default" href="{% url 'clients:client_add' %}">
+                            <i class="fa fa-plus"></i>
+                            Add</a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Client ID</th>
+                            <th>Parsers</th>
+                            <th>Agents</th>
+                            <th>Created at</th>
+                            <th>Updated at</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for object in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ object.name }}</td>
+                                <td>{{object.external_clientid }}</td>
+                                <td>{{object.get_parser_count }}</td>
+                                <td>{{object.get_agents_count }}</td>
+                                <td>{{ object.created_at }}</td>
+                                <td>{{ object.updated_at }}</td>
+                                <td>
+
+                                    <a href="{% url 'clients:client_detail' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="View" data-original-title="View">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'clients:client_edit' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        <a href="{% url 'clients:client_delete' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                    <!--                            <a href="#">Delete</a>-->
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
 {% endblock %}

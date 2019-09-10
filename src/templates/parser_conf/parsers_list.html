@@ -1,57 +1,77 @@
 {% extends 'base.html'  %}
 
 {% block main_content %}
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Parsers</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="btn btn-xs btn-default" href="{% url 'parser:collection_list' %}">
-                        <i class="fa fa-plus"></i>
-                        Add</a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Expected Columns</th>
-                        <th>Mapped columns</th>
-                        <th>Created at</th>
-                        <th>Updated at</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for object in object_list %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ object.name }}</td>
-                        <td>
-                            {% for column in object.get_expected_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2> <i class="fa fa-list"></i> &nbsp;Parsers</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="btn btn-xs btn-default" href="{% url 'parser:collection_list' %}">
+                            <i class="fa fa-plus"></i>
+                            Add</a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Expected Columns</th>
+                            <th>Mapped columns</th>
+                            <th>Created at</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for object in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ object.name }}</td>
+                                <td>
+                                    {% for column in object.get_expected_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
 
-                        </td>
-                        <td>
-                            {% for column in object.get_mapped_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
-                        </td>
-                        <td>{{ object.created_at }}</td>
-                        <td>{{ object.updated_at }}</td>
-                        <td>
-                            <a href="{% url 'parser:parser_edit' object.pk %}">Edit</a>
-<!--                            <a href="#">Delete</a>-->
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                                <td>
+                                    {% for column in object.get_mapped_columns %} {{ column }} {% if not forloop.last %},{% endif%}{% endfor %}
+                                </td>
+                                <td>{{ object.created_at }}</td>
+                                <td>
+                                    <a href="{% url 'parser:parser_edit' object.pk %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="View" data-original-title="View">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
+                                    <a href="{% url 'parser:parser_delete' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete">
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+{% comment %}{##}
+{#                                    <ul class="nav nav-pills" role="tablist">#}
+                                        <li role="presentation" class="dropdown">
+                                            <a id="drop6" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                                <i class="fa fa-cogs"></i>
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul id="menu3" class="dropdown-menu animated fadeInDown" role="menu" aria-labelledby="drop6">
+
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/fat">Something else here</a>
+                                                </li>
+                                                <li role="presentation" class="divider"></li>
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/fat">Separated link</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+{#                                    </ul>#}{% endcomment %}
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

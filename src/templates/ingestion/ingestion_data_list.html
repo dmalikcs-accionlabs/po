@@ -5,7 +5,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Ingestion</h2>
+                <h2> <i class="fa fa-list"></i> Ingestion</h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
@@ -17,7 +17,6 @@
                         <th>Client</th>
                         {% endif %}
                         <th>Subject</th>
-                        <th>can process</th>
                         <th>Status</th>
                         <th>Files</th>
                         <th>Created at</th>
@@ -34,15 +33,18 @@
                         {% endif %}
 
                         <td>{{ object.subject }}</td>
-                        <td>{% if  object.can_process %}
-                            <i class="fa fa-check-circle-o text-success"></i>
-                            {% else %} <i class="fa  fa-times-circle-o text-danger"></i> {% endif %}</td>
-                        <td>{{ object.get_status_display }}</td>
+                        <td>{{ object.get_status_display|capfirst }}</td>
                         <td>{{ object.get_attached_files_count }}</td>
                         <td>{{ object.created_at }}</td>
                         <td>{{ object.updated_at }}</td>
                         <td>
-                            <a href="{% url 'ingestion:ingestion_detail' object.id %}">View</a>
+
+                            <a href="{% url 'ingestion:ingestion_detail' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="View" data-original-title="View">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <a href="{% url 'ingestion:ingestion_delete' object.id %}" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
 <!--                            <a href="#">Edit</a> -->
 <!--                            <a href="#">Delete</a>-->
                         </td>

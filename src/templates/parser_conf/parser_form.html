@@ -2,60 +2,111 @@
 
 {% block main_content %}
 
-<div class="col-md-8 col-xs-12">
-    <div class="x_panel">
-        <div class="x_title">
-            <h2>Parser Edit </h2>
+    <div class="col-md-8 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2> <i class="fa fa-pencil-square-o"></i> Parser Edit </h2>
 
-            <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-            <br>
-            <form action="." method="post" class="form-horizontal">
-                {% csrf_token %}
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <br>
+                <form action="." method="post" class="form-horizontal">
+                    {% csrf_token %}
 
-                {% include 'includes/forms/fields.html' %}
+                    {% include 'includes/forms/fields.html' %}
 
-                {{ column_map_formset.management_form }}
+                    {{ column_map_formset.management_form }}
 
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Expected Column</th>
-                        <th>Map Column</th>
-                        <th>Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for form in column_map_formset %}
-                    <tr>
-                        {% for hidden_field in form.hidden_fields %}
-                        {{ hidden_field }}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Expected Column</th>
+                            <th>Map Column</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for form in column_map_formset %}
+                            <tr>
+                                {% for hidden_field in form.hidden_fields %}
+                                    {{ hidden_field }}
+                                {% endfor %}
+
+                                {% for field in form.visible_fields %}
+                                    <td>{{ field }}
+                                        {% if field.errors  %}
+                                            {{ field.errors }}
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
                         {% endfor %}
+                        </tbody>
+                    </table>
 
-                        {% for field in form.visible_fields %}
-                        <td>{{ field }}
-                            {% if field.errors  %}
-                            {{ field.errors }}
-                            {% endif %}
-                        </td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-
-                <div class="form-group">
-                    <div class="col-sm-4 col-sm-offset-2">
-                        <a  href="{{ cancel_url }}" class="btn btn-white">{{ cancel|default:"Cancel" }}</a>
-                        <button class="btn btn-primary" type="submit">{{ save|default:"Save changes" }}</button>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <a  href="{{ cancel_url }}" class="btn btn-white">{{ cancel|default:"Cancel" }}</a>
+                            <button class="btn btn-primary" type="submit">{{ save|default:"Save changes" }}</button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
 
+            </div>
         </div>
+
     </div>
 
-</div>
+    {% if object %}
+        <div class="col-md-4">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2> <i class="fa fa-plus"></i> Post Ingestion Task</h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+{#                    <a href="{% url 'parser:post_parser_message' object.pk %}" type="button" class="btn btn-default btn-block" >#}
+{#                        Text Notification</a>#}
+                    <a href="{% url 'parser:post_parser_email' object.pk %}" type="button" class="btn btn-default btn-block" >
+                        Notifications</a>
+                    <a href="{% url 'parser:post_parser_report' object.pk %}" type="button" class="btn btn-default btn-block" >
+                        Post Ingestion Management Task </a>
+                </div>
+            </div>
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2> <i class="fa fa-list"></i> Post Ingestion Tasks</h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+
+                    {% for object in object.post_ingestions.all %}
+                        <p>
+{#                            {% if object.content_type.model == 'textnotification' %}#}
+{#                                {% with object.content_object as obj %}#}
+{#                                    {{ obj.mobile }}#}
+{#                                {% endwith %}#}
+                            {% if object.content_type.model == 'emailnotification' %}
+                                {% with object.content_object as obj %}
+                                    {{ obj.email }}
+                                {% endwith %}
+                            {%  elif object.content_type.model == 'postingestionreport' %}
+                                {% with object.content_object as obj %}
+                                    {{ obj.email }}
+                                {% endwith %}
+
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 
 {% endblock %}

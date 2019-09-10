@@ -80,3 +80,14 @@ class DATEFormatChoice:
 
 
 DATE_FORMAT_CHOICE_LIST = DATEFormatChoice.get_choices()
+
+
+class PostIngestionChoice:
+    VALIDATE_INGESTION = 'VALIDATE_INVENTORY'
+    SEND_EMAIL = 'SEND_EMAIL'
+
+    @classonlymethod
+    def get_choices(cls):
+        return (
+            (cls.VALIDATE_INGESTION, 'Validate Ingested Inventory')
+        )

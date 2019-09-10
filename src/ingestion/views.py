@@ -1,5 +1,5 @@
 from django.views.generic import ListView, TemplateView, \
-    FormView, DetailView, RedirectView
+    FormView, DetailView, RedirectView, DeleteView
 from django.views.generic.edit import SingleObjectMixin
 from .models import IngestionData, IngestionDataAttachment
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,7 +7,15 @@ from .forms import get_ingestion_form
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework.response import Response
+from ingestion.models import IngestionInventory
+
+from ingestion.serializers import IngestionInventorySerializer
+
+from django.shortcuts import get_object_or_404
 
 class IngestionDataList(LoginRequiredMixin, ListView):
     model = IngestionData
@@ -61,24 +69,38 @@ class UploadInventory(FormView):
 
     def get_success_url(self):
         return reverse('ingestion:ingestion_detail', args=[self.object.pk, ])
-#
-
-from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework.response import Response
-from ingestion.models import IngestionInventory
-
-
-from ingestion.serializers import IngestionInventorySerializer
 
 class InventoryListAPIView(generics.ListAPIView):
     serializer_class = IngestionInventorySerializer
-    queryset = IngestionInventory.objects.all()
 
-    # def list(self, request, format=None):
-    #     inventories  = IngestionInventory.objects.all()
-    #     serializer = IngestionInventorySerializer(inventories, many=True)
-    #     return Response(serializer.data)
+    def get_queryset(self):
+        return self.obj.ingestion_inventories.all().order_by('-created_at')
+
+    def list(self, request, pk, *args,  **kwargs):
+        self.obj = get_object_or_404(IngestionData, pk=pk)
+        return super(InventoryListAPIView, self).list(request, *args, **kwargs)
+#
+class InventoryAPIUpdateView(APIView):
+    permission_classes = []
+    authentication_classes = []
+
+
+    def post(self, request, *args, **kwargs):
+        response_data = []
+        response = {
+            'data': response_data
+        }
+        pk = kwargs.get('pk')
+        o = get_object_or_404(IngestionInventory, pk=pk)
+        data = request.data['data']
+        v = data[str(pk)]
+        for key, value in v.items():
+            o.inventory.update({key: value})
+            o.save()
+        inventory = o.inventory
+        inventory.update({'row_Id': o.pk})
+        response_data.append(inventory)
+        return Response(response)
 
 
 class InventoryProcessView(SingleObjectMixin, RedirectView):
@@ -90,3 +112,15 @@ class InventoryProcessView(SingleObjectMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse('ingestion:ingestion_detail', args=[self.object.ingestion.pk])
+
+
+class IngestionDataDeleteView(DeleteView):
+    model = IngestionData
+    success_url = reverse_lazy('ingestion:ingestion_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(IngestionDataDeleteView, self).get_context_data(**kwargs)
+        context['page_header'] = 'Ingestion'
+        context['cancel_url'] = reverse('ingestion:ingestion_list')
+        return context
+

@@ -1,7 +1,8 @@
 from django.views.generic import ListView, TemplateView, DetailView, \
-    UpdateView, CreateView
+    UpdateView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
+from django.urls import reverse, \
+    reverse_lazy
 from clients.models import Client, ClientAgent
 from django.http import HttpResponseForbidden
 
@@ -30,6 +31,17 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ClientDetailView, self).get_context_data(**kwargs)
         context['page_header'] = 'Clients'
+        return context
+
+
+class ClientDeletelView(LoginRequiredMixin, DeleteView):
+    model = Client
+    success_url = reverse_lazy('clients:client_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientDeletelView, self).get_context_data(**kwargs)
+        context['page_header'] = 'Clients'
+        context['cancel_url'] = reverse('clients:client_list')
         return context
 
 
@@ -128,4 +140,15 @@ class AgentAddForm(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(AgentAddForm, self).get_context_data(**kwargs)
         context['page_header'] = 'Agents'
+        return context
+
+
+class AgentDeleteView(LoginRequiredMixin, DeleteView):
+    model = ClientAgent
+    success_url = reverse_lazy('clients:agent_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(AgentDeleteView, self).get_context_data(**kwargs)
+        context['page_header'] = 'Agents'
+        context['cancel_url'] = reverse('clients:agent_list')
         return context

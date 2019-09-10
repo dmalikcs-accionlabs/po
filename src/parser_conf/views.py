@@ -1,23 +1,29 @@
-from django.urls import reverse
-from django.views.generic import ListView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, \
+    DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import ParserConfigurationDef, ParserCollection
+from django.views.generic.edit import SingleObjectMixin
+from .models import ParserConfigurationDef, ParserCollection, \
+    EmailNotification, PostIngestionReport
 from extra_views import CreateWithInlinesView, \
     UpdateWithInlinesView, InlineFormSetFactory, \
     NamedFormsetsMixin
-
+from extra_views import ModelFormSetView
 from .forms import ColumnMapInineView, \
-    ParserConfigurationDefForm, get_columnmap_inline_view
+    ParserConfigurationDefForm, get_columnmap_inline_view, \
+    EmailNotificationForm, PostIngestionReportForm
+from django.utils.html import format_html
+
 
 class ParserListView(LoginRequiredMixin, ListView):
-    model = ParserConfigurationDef
     template_name = 'parser_conf/parsers_list.html'
-
+    queryset = ParserConfigurationDef. \
+        objects.filter(deleted_at__isnull=True)
 
     def get_queryset(self):
         u = self.request.user
         if not u.is_staff:
-            return self.model.objects.filter(user=u) ## todo: combined another which shared option as an public
+            return self.queryset.filter(user=u) ## todo: combined another which shared option as an public
         return super(ParserListView, self).get_queryset()
 
 
@@ -94,3 +100,89 @@ class CollectionListView(ListView):
         context['page_header'] = 'Collections'
         return context
 
+
+class ParseDeleteView(DeleteView):
+    model = ParserConfigurationDef
+    success_url = reverse_lazy('parser:parser_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(ParseDeleteView, self).get_context_data(**kwargs)
+        context['page_header'] = 'Parsers'
+        context['cancel_url'] = reverse('parser:parser_list')
+        return context
+
+from .models import TextNotification
+from .forms import TextNotificationForm
+
+
+class BasePostIngestion(SingleObjectMixin, ModelFormSetView):
+    factory_kwargs = {
+        'can_delete': True,
+        'extra': 3
+    }
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=ParserConfigurationDef.objects.all())
+        return super(BasePostIngestion, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.filter(parser=self.object)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a formset instance with the passed
+        POST variables and then checked for validity.
+        """
+        self.object = self.get_object(queryset=ParserConfigurationDef.objects.all())
+        self.object_list = self.get_queryset()
+        formset = self.construct_formset()
+        for form in formset.forms:
+            form.instance.parser = self.object
+
+        if formset.is_valid():
+            return self.formset_valid(formset)
+        else:
+            return self.formset_invalid(formset)
+
+    def get_context_data(self, **kwargs):
+        context = super(BasePostIngestion, self).get_context_data(**kwargs)
+        context['page_header'] = 'Parser'
+        context['cancel_url'] = reverse('parser:parser_edit', args=[self.object.pk, ])
+        return context
+
+
+class MessageNotificationFormset(BasePostIngestion):
+    template_name = 'parser_conf/post_parser_run_form.html'
+    model = TextNotification
+    form_class = TextNotificationForm
+
+    def get_context_data(self, **kwargs):
+        context = super(MessageNotificationFormset, self).get_context_data(**kwargs)
+        context['widget_heading'] = 'Text Notifications'
+        context['icon'] = format_html('<i class="fa fa-paper-plane"></i>')
+
+        return context
+
+
+class EmailNotificationFormset(BasePostIngestion):
+    template_name = 'parser_conf/post_parser_run_form.html'
+    model = EmailNotification
+    form_class = EmailNotificationForm
+
+    def get_context_data(self, **kwargs):
+        context = super(EmailNotificationFormset, self).get_context_data(**kwargs)
+        context['widget_heading'] = 'Email Notifications'
+        context['icon'] = format_html('<i class="fa fa-envelope"></i>')
+
+        return context
+
+class ReportFormset(BasePostIngestion):
+    template_name = 'parser_conf/post_parser_run_form.html'
+    model = PostIngestionReport
+    form_class = PostIngestionReportForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportFormset, self).get_context_data(**kwargs)
+        context['widget_heading'] = 'Reports '
+        context['icon'] = format_html('<i class="fa fa-paperclip"></i>')
+        return context
