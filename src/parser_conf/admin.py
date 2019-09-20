@@ -2,10 +2,12 @@
 from django.contrib import admin
 
 from .models import ParserConfigurationDef, \
-    ColumnPayloadMap, ParserCollection, PostIngestion
+    ColumnPayloadMap, ParserCollection, PostIngestion,\
+    ParserCollectionColumm
 
 
-
+class ParserCollectionColummInline(admin.TabularInline):
+    model = ParserCollectionColumm
 
 class ColumnPayloadMapAdmin(admin.TabularInline):
     model = ColumnPayloadMap
@@ -39,7 +41,7 @@ class ParserConfigurationDefAdmin(admin.ModelAdmin):
 
 @admin.register(ParserCollection)
 class ParserCollection(admin.ModelAdmin):
-    pass
+    inlines = [ParserCollectionColummInline, ]
 
 
 

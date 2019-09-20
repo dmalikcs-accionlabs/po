@@ -1,5 +1,6 @@
 from django.utils.decorators import classonlymethod
 
+
 class InventoryStatusChoice:
     NEW = 'N'
     QUEUE = 'Q'
@@ -17,6 +18,7 @@ class InventoryStatusChoice:
 
 INVENTORYSTATUSCHOICE_LIST = InventoryStatusChoice.get_choices()
 
+
 class StatusChoice:
     NEW = "N"
     STOPED = 'S'
@@ -31,6 +33,7 @@ class StatusChoice:
             (cls.COMPLETED_FAILED, "Failed"),
             (cls.COMPLETED_SUCCESS, "Completed"),
         )
+
 
 STATUS_CHOICE_STATUS = StatusChoice.get_choices()
 
@@ -62,4 +65,22 @@ class TaskChoice:
             (cls.HANDLE_RESPONSE_TASK, 'Handle response task'),
         )
 
+
 TASK_CHOICE_LIST = TaskChoice.get_choices()
+
+
+class IngestionTypeChoice:
+    EMAIL = 'E'
+    WEB_FORM = 'W'
+    API = 'A'
+
+    @classonlymethod
+    def get_choices(cls):
+        return (
+            (cls.EMAIL, 'Email'),
+            (cls.WEB_FORM, 'Web'),
+            (cls.API, 'API'),
+        )
+
+
+INGESTION_TYPE_LIST = IngestionTypeChoice.get_choices()

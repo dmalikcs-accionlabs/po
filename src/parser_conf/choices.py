@@ -91,3 +91,21 @@ class PostIngestionChoice:
         return (
             (cls.VALIDATE_INGESTION, 'Validate Ingested Inventory')
         )
+
+
+class DataTypeChoice:
+    CHARFIELD = 'CharField'
+    INTEGERFIELD = 'IntField'
+    TIMEFIELD = 'TimeField'
+    DECIMAL_FIELD = 'DecimalField'
+
+    @classonlymethod
+    def get_choices(cls):
+        return (
+            (cls.CHARFIELD, 'CharField'),
+            (cls.INTEGERFIELD, 'IntegerField'),
+            (cls.TIMEFIELD, 'TimeField'),
+            (cls.DECIMAL_FIELD, 'DecimalField'),
+        )
+
+DATA_TYPE_CHOICES = DataTypeChoice.get_choices()

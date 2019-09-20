@@ -2,6 +2,7 @@ from rest_framework import serializers, status
 from clients.models import ClientAgent
 from ingestion.models import IngestionData, \
     IngestionDataAttachment
+from ingestion.choices import IngestionTypeChoice
 from rest_framework.response import Response
 
 class IngestionSerializer(serializers.Serializer):
@@ -22,7 +23,7 @@ class IngestionSerializer(serializers.Serializer):
         object, created = ClientAgent.objects.get_or_create(email=email)
         if created:
             print("Send Information as new agent added")
-        o = IngestionData.objects.create(agent=object, body=body, subject=subject)
+        o = IngestionData.objects.create(agent=object, body=body, subject=subject, ing_type=IngestionTypeChoice.API)
         print("Ingestion data object created {}".format(o.subject))
         i = IngestionDataAttachment.objects.create(ingestion=o, data_file=file, is_supported=True)
         return {'body': o.body, 'email': object.email,  'subject':o.subject, 'attachment': i.pk, 'ingestion_id': o.pk}

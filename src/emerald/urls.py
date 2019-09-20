@@ -14,12 +14,15 @@ class SettingsTemplateView(django.views.generic.TemplateView):
         return context
 
 from ingestion.views import InventoryListAPIView, InventoryAPIUpdateView
+from services.views import ProductionSearchAPIView
+
 
 
 api_patterns = [
     path('inventory/<int:pk>/', InventoryListAPIView.as_view()),
     path('inventory/update/<int:pk>/', InventoryAPIUpdateView.as_view()),
     path('ingestion/', EmailIngestionAPI.as_view()),
+    path('event/', ProductionSearchAPIView.as_view()),
     ]
 
 

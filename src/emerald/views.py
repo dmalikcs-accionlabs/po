@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 from clients.models import ClientAgent
 from ingestion.models import IngestionData, \
     IngestionDataAttachment
+from ingestion.choices import IngestionTypeChoice
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class IndexView(LoginRequiredMixin, RedirectView):
@@ -26,7 +27,7 @@ class IngestionReplicationView(FormView):
         object, created = ClientAgent.objects.get_or_create(email=email)
         if created:
             print("Send Information as new agent added")
-        o = IngestionData.objects.create(agent=object, body=body, subject=subject)
+        o = IngestionData.objects.create(agent=object, body=body, subject=subject, ing_type=IngestionTypeChoice.EMAIL)
         print("Ingestion data object created {}".format(o.subject))
         IngestionDataAttachment.objects.create(ingestion=o, data_file=file, is_supported=True)
         return super(IngestionReplicationView, self).form_valid(form)

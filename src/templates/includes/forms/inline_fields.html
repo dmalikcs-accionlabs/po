@@ -1,0 +1,48 @@
+{% if form.non_field_errors %}
+
+    {% for error in form.non_field_errors %}
+        <div class="form-group has_error">
+            <div class="col-sm-12 text-center">
+            <span class="error text-danger">
+            {{ error }}
+                </span>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endif %}
+
+{% for field in form.hidden_fields %}
+    {{ field }}
+{% endfor %}
+
+
+{% for field in form.visible_fields %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+
+
+        <div class="col-sm-8">
+            <label class="control-label">{{ field.label }}:{% if field.field.required %}*{% endif %}</label>
+            <span class="error text-danger">{{ field.errors }}</span>
+
+            {{ field }}
+
+            {% if field.help_text %}
+                <span class="help-block m-b-none">{{ field.help_text|safe }}</span>
+            {% endif %}
+        </div>
+
+    </div>
+{% endfor %}
+{% comment %}
+
+ <label for="email">Email address:</label>
+  <input type="email" class="form-control" id="email">
+  <label for="pwd">Password:</label>
+  <input type="password" class="form-control" id="pwd">
+  <div class="form-check">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox"> Remember me
+    </label>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>{% endcomment %}

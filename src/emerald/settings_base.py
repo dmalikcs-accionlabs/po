@@ -22,7 +22,16 @@ DATABASES = {
         'PASSWORD': 'unix123',
         'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '5432',                      # Set to empty string for default.
-    }
+    },
+    'monarch_replica': {
+        'DRIVER': '{ODBC Driver 17 for SQL Server}',
+        'NAME': '',
+        'USER': os.getenv('MONARCH_REPLICA_USER'),
+        'PASSWORD': os.getenv('MONARCH_REPLICA_PASS'),
+        'HOST': os.getenv('MONARCH_REPLICA_HOST'),
+        'PORT': '1443',
+    },
+
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -165,6 +174,7 @@ INSTALLED_APPS = (
     'utils',
     'rules',
     'notification',
+    'services',
 
 )
 

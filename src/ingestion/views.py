@@ -12,9 +12,9 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
 from ingestion.models import IngestionInventory
-
 from ingestion.serializers import IngestionInventorySerializer
-
+from services.forms import EventNameSearchForm
+from ingestion.choices import IngestionTypeChoice
 from django.shortcuts import get_object_or_404
 
 class IngestionDataList(LoginRequiredMixin, ListView):
@@ -50,6 +50,7 @@ class UploadInventory(FormView):
     def get_context_data(self, **kwargs):
         context = super(UploadInventory, self).get_context_data(**kwargs)
         context['page_header'] = 'Upload inventory'
+        context['event_search_form'] = EventNameSearchForm()
         context['enctype'] = True
         return context
 
@@ -62,7 +63,7 @@ class UploadInventory(FormView):
         parser = form.cleaned_data['parser']
         user = self.request.user
         subject = 'web upload'
-        o = IngestionData.objects.create(content_type=content_type, object_id=user.pk, subject=subject, parser=parser)
+        o = IngestionData.objects.create(content_type=content_type, object_id=user.pk, subject=subject, parser=parser, ing_type=IngestionTypeChoice.WEB_FORM)
         IngestionDataAttachment.objects.create(ingestion=o, data_file=file, is_supported=True)
         self.object = o
         return super(UploadInventory, self).form_valid(form)
